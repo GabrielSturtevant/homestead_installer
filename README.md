@@ -11,3 +11,5 @@ This script can be executed via a curl command. It will run and install laravel 
 ```
 export SCRIPTS_URL='git@github.com:csun-metalab/etd-v3.git' && export SCRIPTS_URL_NAME='etdv3' && export SCRIPTS_DIR_NAME='ETD-V3' && export SCRIPTS_DIR_PATH='Code/Meta' && export SCRIPTS_CORES='2' && curl https://raw.githubusercontent.com/GabrielSturtevant/scripts/master/ubuntuHomestead.py | python3
 ```
+
+For more information on how to use the environment variables with this script, please see the [wiki](https://github.com/GabrielSturtevant/homestead_installer/wiki/Environment-Variables).
