@@ -1,4 +1,4 @@
-# Ubuntu Homestead/Laravel  installation script
+# Ubuntu Homestead/Laravel  installation script [![Build Status](https://travis-ci.org/GabrielSturtevant/homestead_installer.svg?branch=master)](https://travis-ci.org/GabrielSturtevant/homestead_installer)
 
 This script is for my own personal use. Use it with caution as I have not written it with systems other than my own in mind
 
