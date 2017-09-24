@@ -85,14 +85,25 @@ def install(program_name, common_name):
     os.system('clear')
 
 
-help_out = 'This provides a small list of command line arguments that this \n' \
-           'program will accept:\n' \
-           '\t-u\tEnter a custom url to fetch a Laravel repository from\n' \
-           '\t-n\tEnter a custom application name\n' \
-           '\t-d\tEnter a custom directory path to install Laravel in\n' \
-           '\t-D\tEnter a custom name for your Laravel directory\n' \
-           '\t-c\tEnter the number of cores to assign to your VM\n' \
-           '\t-h\tHelp screen'
+# Parse command-line arguments and create the help text.
+
+
+parser = argparse.ArgumentParser(description='Laravel/Homestead+Ubuntu installation script')
+parser.add_argument('-u','--url', metavar='LARAVEL_REPO_URL', type=str, nargs=1,
+                    help='a custom url telling this script where to find the Laravel git repository')
+parser.add_argument('-n','--name', metavar='APP_NAME', type=str, nargs=1,
+                    help='the name of the default application to be created within Homestead')
+parser.add_argument('-d','--directory-path', metavar='LARAVEL_DIR_PATH', type=str, nargs=1,
+                    help='a directory path in which to install Laravel')
+parser.add_argument('-D','--directory-name', metavar='LARAVEL_DIR_NAME', type=str, nargs=1,
+                    help='a custom name for your Laravel directory')
+parser.add_argument('-c','--cores', metavar='N_CORES', type=int, nargs=1,
+                    help='a directory path in which to install Laravel.')
+
+args = parser.parse_args("-u http://github.com/DanielSchetritt/repo.git --cores 1 -D Laraproj -d /home/danielo/laraproj -n laraproj".split()).__dict__
+print(args)
+exit(0)
+
 
 try:
     opts, args = getopt.getopt(sys.argv[1:], "hu:n:l:d:D:c:", ['help'])
