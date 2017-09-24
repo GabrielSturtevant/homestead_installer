@@ -148,6 +148,7 @@ install('git', 'Git')
 install('virtualbox', 'VirtualBox')
 install('vim', 'Vim')
 install('python-pip', 'Pip')
+install('net-tools', 'Net Tools')
 
 # Install python dependencies
 os.system('sudo pip install beautifulsoup4')
@@ -169,6 +170,7 @@ ssh_key = open(os.environ['HOME'] + '/.ssh/id_rsa.pub', 'r').read()
 
 # TODO: Add prompt to exchange ssh key with github
 
+os.system('clear')
 print("You will need to add this ssh key to github")
 
 while not ssh_accepted:
