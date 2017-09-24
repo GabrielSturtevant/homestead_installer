@@ -52,6 +52,11 @@ INITIAL_PATH = os.getcwd()
 HOST_PERMISSIONS = "644"
 HOMESTEAD_URL = 'https://github.com/laravel/homestead.git'
 VAGRANT_URL = 'https://raw.githubusercontent.com/GabrielSturtevant/homestead_installer/master/GetVagrantLink.py'
+# Gets the number of CPUS on the system, but if for some reason it doesn' work, default to 32.
+MAX_NUMEBR_OF_CPUS = int(subprocess.check_output('nproc --all', shell=True))  or 32
+
+# User defined variables. Will be set by the argument parser.
+USER_VARS = {}
 
 # User Definable Variables
 SSH_LINK = False
@@ -88,46 +93,57 @@ def install(program_name, common_name):
 
 # Parse command-line arguments and create the help text.
 
-
 parser = argparse.ArgumentParser(description='Laravel/Homestead+Ubuntu installation script')
-parser.add_argument('-u','--url', metavar='LARAVEL_REPO_URL', type=str, nargs=1,
+
+parser.add_argument('-u','--framework-url',
+                    metavar='FRAMEWORK_URL',
+                    type=str,
+                    nargs=1,
+                    default="https://github.com/laravel/laravel.git",
                     help='a custom url telling this script where to find the Laravel git repository')
-parser.add_argument('-n','--name', metavar='APP_NAME', type=str, nargs=1,
+
+parser.add_argument('-n','--app-name',
+                    metavar='APP_NAME',
+                    type=str,
+                    nargs=1,
+                    default="homestead",
                     help='the name of the default application to be created within Homestead')
-parser.add_argument('-d','--directory-path', metavar='LARAVEL_DIR_PATH', type=str, nargs=1,
+
+parser.add_argument('-d','--framework-dir-path',
+                    metavar='FRAMEWORK_DIR_PATH',
+                    type=str,
+                    nargs=1,
+                    default='Code',
                     help='a directory path in which to install Laravel')
-parser.add_argument('-D','--directory-name', metavar='LARAVEL_DIR_NAME', type=str, nargs=1,
+
+parser.add_argument('-D','--framework-dir-name',
+                    metavar='FRAMEWORK_DIR_NAME',
+                    type=str,
+                    nargs=1,
+                    default='Laravel',
                     help='a custom name for your Laravel directory')
-parser.add_argument('-c','--cores', metavar='N_CORES', type=int, nargs=1,
-                    help='a directory path in which to install Laravel.')
 
-args = parser.parse_args("-u http://github.com/DanielSchetritt/repo.git --cores 1 -D Laraproj -d /home/danielo/laraproj -n laraproj".split()).__dict__
-print(args)
-exit(0)
+parser.add_argument('-c','--number-of-cpus',
+                    metavar='NUMBER_OF_CPUS',
+                    type=int,
+                    nargs=1,
+                    choices=range(1,MAX_NUMEBR_OF_CPUS+1),
+                    default=1,
+                    help='the number of cpu cores to give the VM')
+
+# Parse the arguments into an object with attribute variables named the same as the --long-option for the parameters, but in snake_case.
+args = parser.parse_args()
+
+# Handle any special cases in the arguments
+USER_VARS.update(args.__dict__)
+
+if 'git@github.com' in USER_VARS['framework_url']:
+    USER_VARS['ssh_link'] = True
+if '.app' not in USER_VARS['app_name']:
+    USER_VARS['app_name'] += '.app'
 
 
-try:
-    opts, args = getopt.getopt(sys.argv[1:], "hu:n:l:d:D:c:", ['help'])
-except getopt.GetoptError:
-    print('names.py -f -l -e -d -n <number of names to print>')
-    sys.exit(2)
-
-for opt, arg in opts:
-    if opt in ('-h', '--help'):
-        print(help_out)
-        sys.exit(1)
-    elif opt in '-u':
-        DEFAULT_FRAMEWORK_URL = arg
-        if 'git@github.com' in DEFAULT_FRAMEWORK_URL:
-            SSH_LINK = True
-    elif opt in '-n':
-        URL_NAME = arg + '.app'
-    elif opt in '-D':
-        DEFAULT_FW_DIR_NAME = arg
-    elif opt in '-d':
-        FRAMEWORK_PATH = arg
-    elif opt in '-c':
-        NUMBER_OF_CPUS = arg
+os.system('clear')
 
 for x in ENV_VARS:
     if x in os.environ:
