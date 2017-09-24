@@ -20,6 +20,7 @@
 #
 # Contributor(s):
 # Gabriel Sturtevant <gabriel@gabrielsturtevant.com>
+# Daniel Schetritt <daniel.schetritt@gmail.com>
 
 import getopt
 import getpass
