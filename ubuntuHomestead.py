@@ -51,6 +51,7 @@ INITIAL_PATH = os.getcwd()
 HOST_PERMISSIONS = "644"
 HOMESTEAD_URL = 'https://github.com/laravel/homestead.git'
 VAGRANT_URL = 'https://raw.githubusercontent.com/GabrielSturtevant/homestead_installer/master/GetVagrantLink.py'
+SSH_SUCCESS_CODE = 256
 # Gets the number of CPUS on the system, but if for some reason it doesn' work, default to 32.
 MAX_NUMEBR_OF_CPUS = int(subprocess.check_output('nproc --all', shell=True))  or 32
 
@@ -81,11 +82,11 @@ def install(program_name, common_name):
     time.sleep(1)
     os.system('clear')
 
-def add_ssh_key_to_github(ssh_key):
+def add_ssh_key_to_github(ssh_key, computer_name):
     # Check if your key already works.
     ssh_accepted = os.system('ssh -Ta git@github.com')
 
-    while not ssh_accepted:
+    while ssh_accepted is not SSH_SUCCESS_CODE:
         user_name = input('What\'s your github username? ')
         password = getpass.getpass('What\'s your github password? ')
         auth = HTTPBasicAuth(user_name, password)
@@ -94,7 +95,7 @@ def add_ssh_key_to_github(ssh_key):
         url = 'https://api.github.com/user/keys'
 
         data = {
-            'title': 'Omen',
+            'title': computer_name,
             'key': key,
         }
 
@@ -104,7 +105,6 @@ def add_ssh_key_to_github(ssh_key):
         github_response_data = json.loads(github_response.text)
         os.system('clear')
         if github_response.status_code == 201:
-            ssh_accepted = True
             print('Congratulations! Your ssh key has been successfully added to GitHub.')
         else:
             os.system('clear')
@@ -113,6 +113,10 @@ def add_ssh_key_to_github(ssh_key):
             except Exception:
                 print('An unknown error occurred')
                 print('Your username and/or password were probably incorrect\n')
+
+        print("Verifying SSH connection...")
+        ssh_accepted = os.system('ssh -Ta git@github.com')
+
 
 # Parse command-line arguments and create the help text.
 
@@ -200,7 +204,7 @@ if not os.path.isfile(os.environ['HOME'] + '/.ssh/id_rsa.pub'):
     print("You will need to add this ssh key to github")
 
 ssh_key = open(os.environ['HOME'] + '/.ssh/id_rsa.pub', 'r').read()
-add_ssh_key_to_github(ssh_key)
+add_ssh_key_to_github(ssh_key, "Omen")
 
 # TODO: Add prompt to exchange ssh key with github
 
