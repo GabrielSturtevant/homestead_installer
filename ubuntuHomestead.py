@@ -82,9 +82,12 @@ def install(program_name, common_name):
     time.sleep(1)
     os.system('clear')
 
-def add_ssh_key_to_github(ssh_key, computer_name):
+def add_ssh_key_to_github(ssh_key):
     # Check if your key already works.
     ssh_accepted = os.system('ssh -Ta git@github.com')
+    computer_name = ""
+    while ssh_accepted is not SSH_SUCCESS_CODE and computer_name is "":
+        computer_name =input("What would you like to call your computer on GitHub?\nComputer Name: ")
 
     while ssh_accepted is not SSH_SUCCESS_CODE:
         user_name = input('What\'s your github username? ')
@@ -119,8 +122,6 @@ def add_ssh_key_to_github(ssh_key, computer_name):
 
 
 # Parse command-line arguments and create the help text.
-
-
 
 parser = argparse.ArgumentParser(description='Laravel/Homestead+Ubuntu installation script')
 
@@ -204,7 +205,8 @@ if not os.path.isfile(os.environ['HOME'] + '/.ssh/id_rsa.pub'):
     print("You will need to add this ssh key to github")
 
 ssh_key = open(os.environ['HOME'] + '/.ssh/id_rsa.pub', 'r').read()
-add_ssh_key_to_github(ssh_key, "Omen")
+
+add_ssh_key_to_github(ssh_key)
 
 # TODO: Add prompt to exchange ssh key with github
 
