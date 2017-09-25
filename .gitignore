@@ -102,3 +102,5 @@ ENV/
 .mypy_cache/
 !/experiments.py
 experiments.py
+experiments/
+experiments/*

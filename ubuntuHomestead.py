@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 #
-# homestead_installer
+# homestead_installer.py
 # Copyright (C) 2017, Gabriel Sturtevant <gabriel@gabrielsturtevant.com>
 #
 # This file is part of homestead_installer.
@@ -147,13 +147,14 @@ install('curl', 'Curl')
 install('git', 'Git')
 install('virtualbox', 'VirtualBox')
 install('vim', 'Vim')
-install('python-pip', 'Pip')
+install('python3-pip', 'Pip')
 install('net-tools', 'Net Tools')
 
 # Install python dependencies
-os.system('sudo pip install beautifulsoup4')
-os.system('sudo pip install requests')
-os.system('sudo pip install lxml')
+os.system('sudo pip3 install beautifulsoup4')
+os.system('sudo pip3 install requests')
+os.system('sudo pip3 install lxml')
+os.system('sudo pip3 install ruamel.yaml')
 
 # Checks whether the user has configured an ssh key
 if not os.path.isfile(os.environ['HOME'] + '/.ssh/id_rsa.pub'):
