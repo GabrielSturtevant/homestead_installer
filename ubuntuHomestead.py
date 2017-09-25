@@ -22,7 +22,6 @@
 # Gabriel Sturtevant <gabriel@gabrielsturtevant.com>
 # Daniel Schetritt <daniel.schetritt@gmail.com>
 
-import getopt
 import getpass
 import hashlib
 import json
