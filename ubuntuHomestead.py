@@ -58,14 +58,6 @@ MAX_NUMEBR_OF_CPUS = int(subprocess.check_output('nproc --all', shell=True))  or
 # User defined variables. Will be set by the argument parser.
 USER_VARS = {}
 
-# User Definable Variables
-SSH_LINK = False
-INSTALLED_SSH = False
-FRAMEWORK_PATH = "Code"
-URL_NAME = "homestead.app"
-DEFAULT_FRAMEWORK_URL = "https://github.com/laravel/laravel.git"
-DEFAULT_FW_DIR_NAME = 'Laravel'
-NUMBER_OF_CPUS = '1'
 
 # System modifications
 sys.stdin = open('/dev/tty')
@@ -123,8 +115,9 @@ def add_ssh_key_to_github(ssh_key):
                 print('An unknown error occurred')
                 print('Your username and/or password were probably incorrect\n')
 
-
 # Parse command-line arguments and create the help text.
+
+
 
 parser = argparse.ArgumentParser(description='Laravel/Homestead+Ubuntu installation script')
 
@@ -178,23 +171,6 @@ if '.app' not in USER_VARS['app_name']:
 
 os.system('clear')
 
-for x in ENV_VARS:
-    if x in os.environ:
-        if x == 'SCRIPTS_URL':
-            DEFAULT_FRAMEWORK_URL = os.getenv(x)
-            if 'git@github.com' in DEFAULT_FRAMEWORK_URL:
-                SSH_LINK = True
-        elif x == 'SCRIPTS_URL_NAME':
-            URL_NAME = os.getenv(x) + '.app'
-        elif x == 'SCRIPTS_DIR_NAME':
-            DEFAULT_FW_DIR_NAME = os.getenv(x)
-        elif x == 'SCRIPTS_DIR_PATH':
-            FRAMEWORK_PATH = os.getenv(x)
-        elif x == 'SCRIPTS_CORES':
-            NUMBER_OF_CPUS = os.getenv(x)
-
-os.system('clear')
-
 print('Running Ubuntu Homestead installation script')
 
 # Update system
@@ -245,6 +221,7 @@ if md5(file_name) == FILE_HASH:
     os.system('wget $(python {})'.format(file_name))
 else:
     print('Python script integrity compromised. Exiting now')
+    # TODO: Update the hash at the top of this script.
     # exit(1)
 
 os.system('rm -f {}'.format(file_name))
