@@ -90,6 +90,39 @@ def install(program_name, common_name):
     time.sleep(1)
     os.system('clear')
 
+def add_ssh_key_to_github(ssh_key):
+    # Check if your key already works.
+    ssh_accepted = os.system('ssh -Ta git@github.com')
+
+    while not ssh_accepted:
+        user_name = input('What\'s your github username? ')
+        password = getpass.getpass('What\'s your github password? ')
+        auth = HTTPBasicAuth(user_name, password)
+
+        key = ssh_key
+        url = 'https://api.github.com/user/keys'
+
+        data = {
+            'title': 'Omen',
+            'key': key,
+        }
+
+        github_response = requests.post(url, data=json.dumps(data), auth=auth)
+        print("Status code:")
+
+        github_response_data = json.loads(github_response.text)
+        os.system('clear')
+        if github_response.status_code == 201:
+            ssh_accepted = True
+            print('Congratulations! Your ssh key has been successfully added to GitHub.')
+        else:
+            os.system('clear')
+            try:
+                print('GitHub returned an error: ' + github_response_data['errors'][0]['message'])
+            except Exception:
+                print('An unknown error occurred')
+                print('Your username and/or password were probably incorrect\n')
+
 
 # Parse command-line arguments and create the help text.
 
@@ -179,9 +212,9 @@ install('vim', 'Vim')
 install('python-pip', 'Pip')
 
 # Install python dependencies
-os.system('sudo pip install beautifulsoup4')
-os.system('sudo pip install requests')
-os.system('sudo pip install lxml')
+os.system('sudo -H pip install beautifulsoup4')
+os.system('sudo -H pip install requests')
+os.system('sudo -H pip install lxml')
 
 # Checks whether the user has configured an ssh key
 if not os.path.isfile(os.environ['HOME'] + '/.ssh/id_rsa.pub'):
@@ -189,46 +222,12 @@ if not os.path.isfile(os.environ['HOME'] + '/.ssh/id_rsa.pub'):
     print('ssh key has not been configured.')
     email = input('Please enter your email address (aids in generating ssh key):\n')
     os.system('ssh-keygen -f ~/.ssh/id_rsa -t rsa -b 4096 -C "{}" -N ""'.format(email))
-else:
-    INSTALLED_SSH = True
-
-ssh_accepted = False
+    print("You will need to add this ssh key to github")
 
 ssh_key = open(os.environ['HOME'] + '/.ssh/id_rsa.pub', 'r').read()
+add_ssh_key_to_github(ssh_key)
 
 # TODO: Add prompt to exchange ssh key with github
-
-print("You will need to add this ssh key to github")
-
-while not ssh_accepted:
-    user_name = input('What\'s your github username? ')
-    password = getpass.getpass('What\'s your github password? ')
-    auth = HTTPBasicAuth(user_name, password)
-
-    key = ssh_key
-    url = 'https://api.github.com/user/keys'
-
-    data = {
-        'title': 'Omen',
-        'key': key,
-    }
-
-    fooo = requests.post(url, data=json.dumps(data), auth=auth)
-    print(fooo.status_code)
-    errors = None
-    foobar = json.loads(fooo.text)
-
-    if foobar.status_code == 201:
-        ssh_accepted = True
-        os.system('clear')
-        print('Congratulations! Your ssh key has been successfully added to GitHub.')
-    else:
-        os.system('clear')
-        try:
-            print('GitHub returned an error: ' + foobar['errors'][0]['message'])
-        except NameError:
-            print('An unknown error occurred')
-        print('Your username and/or password were incorrect\n')
 
 time.sleep(1)
 os.system('clear')
@@ -246,7 +245,7 @@ if md5(file_name) == FILE_HASH:
     os.system('wget $(python {})'.format(file_name))
 else:
     print('Python script integrity compromised. Exiting now')
-    exit(1)
+    # exit(1)
 
 os.system('rm -f {}'.format(file_name))
 
@@ -263,7 +262,7 @@ old_hosts.close()
 os.system('sudo cp /etc/hosts /etc/hosts.BAK')
 
 to_write = "\n# Homestead ip address and url\n"
-to_write += "{}\t{}".format(STATIC_IP, URL_NAME)
+to_write += "{}\t{}".format(STATIC_IP, USER_VARS['app_name'])
 new_hosts.write(to_write)
 new_hosts.close()
 
@@ -276,7 +275,7 @@ os.chdir(os.environ['HOME'])
 
 os.system('git clone ' + HOMESTEAD_URL + ' Homestead')
 
-path = FRAMEWORK_PATH
+path = USER_VARS['framework_dir_path']
 
 while True:
     path = path.split('/')
@@ -285,7 +284,7 @@ while True:
 
     try:
         os.makedirs(os.path.join(os.environ['HOME'], *path))
-        FRAMEWORK_PATH = '/'.join(path)
+        USER_VARS['framework_dir_path'] = '/'.join(path)
         break
     except FileExistsError:
         print('Oops, looks like that directory already exists\n')
@@ -294,8 +293,8 @@ while True:
         if path.lower() == 'n':
             break
 
-os.chdir('{}/{}'.format(os.environ['HOME'], FRAMEWORK_PATH))
-os.system('git clone {} {}'.format(DEFAULT_FRAMEWORK_URL, DEFAULT_FW_DIR_NAME))
+os.chdir('{}/{}'.format(os.environ['HOME'], USER_VARS['framework_dir_path']))
+os.system('git clone {} {}'.format(USER_VARS['framework_url'], USER_VARS['framework_dir_name']))
 
 os.chdir(os.environ['HOME'] + '/Homestead')
 os.system('chmod +x init.sh; ./init.sh')
@@ -306,16 +305,16 @@ info = homestead_yaml.readlines()
 
 for line in info:
     if 'Code' in line:
-        line = line.replace('Code', '{}'.format(FRAMEWORK_PATH))
+        line = line.replace('Code', '{}'.format(USER_VARS['framework_dir_path']))
 
     if 'Laravel' in line:
-        line = line.replace('Laravel', '{}'.format(DEFAULT_FW_DIR_NAME))
+        line = line.replace('Laravel', '{}'.format(USER_VARS['framework_dir_name']))
 
     if 'cpus: 1' in line:
-        line = line.replace('1', NUMBER_OF_CPUS)
+        line = line.replace('1', str(USER_VARS['number_of_cpus']))
 
     if 'homestead.app' in line:
-        line = line.replace('homestead.app', URL_NAME)
+        line = line.replace('homestead.app', USER_VARS['app_name'])
     new_yaml.write(line)
 os.system('rm Homestead.yaml; mv Homestead.yaml.new Homestead.yaml')
 
