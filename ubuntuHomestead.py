@@ -45,7 +45,7 @@ ENV_VARS = [
 ]
 
 # Program constants
-FILE_HASH = "66bedeb9271515f1714a70ee857b51a6"
+FILE_HASH = "30394f4b4e96e5b9c333ce458387f291"
 STATIC_IP = "192.168.10.10"
 INITIAL_PATH = os.getcwd()
 HOST_PERMISSIONS = "644"
@@ -120,9 +120,7 @@ def add_ssh_key_to_github(ssh_key):
         print("Verifying SSH connection...")
         ssh_accepted = os.system('ssh -Ta git@github.com')
 
-
 # Parse command-line arguments and create the help text.
-
 parser = argparse.ArgumentParser(description='Laravel/Homestead+Ubuntu installation script')
 
 parser.add_argument('-u','--framework-url',
@@ -161,7 +159,8 @@ parser.add_argument('-c','--number-of-cpus',
                     default=1,
                     help='the number of cpu cores to give the VM')
 
-# Parse the arguments into an object with attribute variables named the same as the --long-option for the parameters, but in snake_case.
+# Parse the arguments into an object with attribute variables named the
+# same as the --long-option for the parameters, but in snake_case.
 args = parser.parse_args()
 
 # Handle any special cases in the arguments
@@ -226,8 +225,7 @@ if md5(file_name) == FILE_HASH:
     os.system('wget $(python {})'.format(file_name))
 else:
     print('Python script integrity compromised. Exiting now')
-    # TODO: Update the hash at the top of this script.
-    # exit(1)
+    exit(1)
 
 os.system('rm -f {}'.format(file_name))
 
