@@ -248,6 +248,7 @@ new_hosts.close()
 
 os.system('sudo mv hosts /etc/hosts')
 os.system('sudo chmod {} /etc/hosts'.format(HOST_PERMISSIONS))
+os.system('sudo chown root:root /etc/hosts')
 print('Finished editing hosts file')
 
 # Go to home directory
